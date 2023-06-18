@@ -1,13 +1,18 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	urlshort "github.com/codesInML/url-short"
+	"github.com/go-yaml/yaml"
 )
 
 func main() {
+	yamlFile := flag.String("yaml", "test.yaml", "Load urls from a yaml file. Must be in the accepted yaml format.")
+	flag.Parse()
 	mux := defaultMux()
 
 	// Build the MapHandler using the mux as the fallback
@@ -19,13 +24,14 @@ func main() {
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
-	yaml := `
-- path: /urlshort
-  url: https://github.com/gophercises/urlshort
-- path: /urlshort-final
-  url: https://github.com/gophercises/urlshort/tree/solution
-`
-	yamlHandler, err := urlshort.YAMLHandler([]byte(yaml), mapHandler)
+	file, err := os.Open(*yamlFile)
+	if err != nil {
+		fmt.Println("Could not load yaml file")
+		return
+	}
+
+	yaml := yaml.NewDecoder(file)
+	yamlHandler, err := urlshort.YAMLHandler(yaml, mapHandler)
 	if err != nil {
 		panic(err)
 	}
