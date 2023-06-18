@@ -1,0 +1,14 @@
+[
+    {
+        "path": "/youtube",
+        "url": "https://youtube.com"
+    },
+    {
+        "path": "/twitter",
+        "url": "https://twitter.com"
+    },
+    {
+        "path": "/instagram",
+        "url": "https://instagram.com"
+    }
+]

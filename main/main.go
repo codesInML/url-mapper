@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	yamlFile := flag.String("yaml", "test.yaml", "Load urls from a yaml file. Must be in the accepted yaml format.")
+	jsonFile := flag.String("json", "test.json", "Load urls from a json file. Must be in the accepted json format.")
 	flag.Parse()
 	mux := defaultMux()
 
@@ -24,13 +26,25 @@ func main() {
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
-	file, err := os.Open(*yamlFile)
+	ymlFile, err := os.Open(*yamlFile)
 	if err != nil {
 		fmt.Println("Could not load yaml file")
 		return
 	}
 
-	yaml := yaml.NewDecoder(file)
+	jsnFile, err := os.Open(*jsonFile)
+	if err != nil {
+		fmt.Println("Could not load json file")
+		return
+	}
+
+	json := json.NewDecoder(jsnFile)
+	_, err = urlshort.JSONHandler(json, mapHandler)
+	if err != nil {
+		panic(err)
+	}
+
+	yaml := yaml.NewDecoder(ymlFile)
 	yamlHandler, err := urlshort.YAMLHandler(yaml, mapHandler)
 	if err != nil {
 		panic(err)
